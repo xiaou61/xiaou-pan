@@ -1,0 +1,28 @@
+# 配置Spring应用的基本信息
+spring:
+  application:
+    name: u-pan-server  # 应用名称
+  output:
+    ansi:
+      enabled: always  # 总是启用ANSI颜色输出
+  mvc:
+    servlet:
+      load-on-startup: 1  # Servlet加载顺序，值为1表示最先加载
+
+  # 配置文件上传相关参数
+  servlet:
+    multipart:
+      max-file-size: 3072MB  # 最大文件大小
+      max-request-size: 3072MB  # 最大请求大小
+
+# 设置服务器端口
+server:
+  port: 8080
+
+# 配置管理端点的暴露信息
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"  # 暴露所有端点
+        exclude: env,beans  # 除了env和beans端点
