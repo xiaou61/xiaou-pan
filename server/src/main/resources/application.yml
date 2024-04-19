@@ -1,5 +1,9 @@
 # 配置Spring应用的基本信息
 spring:
+  redis:
+    database: 1
+    host: 127.0.0.1
+    port: 6379
   application:
     name: u-pan-server  # 应用名称
   output:
@@ -23,6 +27,9 @@ spring:
 
 mybatis-plus:
   mapper-locations: classpath:mappers/**/*.xml
+  #输出sql
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 # 设置服务器端口
 server:
   port: 8080

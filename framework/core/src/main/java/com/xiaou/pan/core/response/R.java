@@ -19,7 +19,7 @@ public class R<T> implements Serializable {
     /**
      * 状态码
      */
-    private Integer code;
+    private final Integer code;
 
     /**
      * 状态说明文案

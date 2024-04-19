@@ -104,7 +104,7 @@ public class AES128Util {
             Cipher cipher = Cipher.getInstance(INSTANCE_STR);
             cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, iv);
             byte[] result = cipher.doFinal(Base64.decode(content));
-            return new String(result, 0, result.length, StandardCharsets.UTF_8);
+            return new String(result, StandardCharsets.UTF_8);
         } catch (Exception e) {
             e.printStackTrace();
         }

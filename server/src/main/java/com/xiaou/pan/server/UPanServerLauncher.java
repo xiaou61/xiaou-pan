@@ -15,17 +15,10 @@ import javax.validation.constraints.NotBlank;
 
 @SpringBootApplication(scanBasePackages = RPanConstants.BASE_COMPONENT_SCAN_PATH)
 @ServletComponentScan(basePackages = RPanConstants.BASE_COMPONENT_SCAN_PATH)
-@RestController
-@Validated
 @EnableTransactionManagement
 @MapperScan(RPanConstants.BASE_COMPONENT_SCAN_PATH + ".server.modules.**.mapper")
 public class UPanServerLauncher {
     public static void main(String[] args) {
         SpringApplication.run(UPanServerLauncher.class, args);
-    }
-
-    @GetMapping("hello")
-    public R<String> hello(@NotBlank(message = "name不能为空") String name) {
-        return R.success("hello" + name);
     }
 }

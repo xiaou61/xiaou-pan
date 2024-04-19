@@ -85,17 +85,16 @@ public class FileUtils {
      * @return
      */
     public static String generateStoreFileRealPath(String basePath, String filename) {
-        return new StringBuffer(basePath)
-                .append(File.separator)
-                .append(DateUtil.thisYear())
-                .append(File.separator)
-                .append(DateUtil.thisMonth() + 1)
-                .append(File.separator)
-                .append(DateUtil.thisDayOfMonth())
-                .append(File.separator)
-                .append(UUIDUtil.getUUID())
-                .append(getFileSuffix(filename))
-                .toString();
+        return basePath +
+                File.separator +
+                DateUtil.thisYear() +
+                File.separator +
+                (DateUtil.thisMonth() + 1) +
+                File.separator +
+                DateUtil.thisDayOfMonth() +
+                File.separator +
+                UUIDUtil.getUUID() +
+                getFileSuffix(filename);
 
     }
 
@@ -135,15 +134,14 @@ public class FileUtils {
     /**
      * 生成默认的文件存储路径
      * <p>
-     * 生成规则：当前登录用户的文件目录 + rpan
+     * 生成规则：当前登录用户的文件目录 + upan
      *
      * @return
      */
     public static String generateDefaultStoreFileRealPath() {
-        return new StringBuffer(System.getProperty("user.home"))
-                .append(File.separator)
-                .append("rpan")
-                .toString();
+        return System.getProperty("user.home") +
+                File.separator +
+                "upan";
     }
 
     /**
@@ -152,12 +150,11 @@ public class FileUtils {
      * @return
      */
     public static String generateDefaultStoreFileChunkRealPath() {
-        return new StringBuffer(System.getProperty("user.home"))
-                .append(File.separator)
-                .append("rpan")
-                .append(File.separator)
-                .append("chunks")
-                .toString();
+        return System.getProperty("user.home") +
+                File.separator +
+                "upan" +
+                File.separator +
+                "chunks";
     }
 
     /**
@@ -171,20 +168,19 @@ public class FileUtils {
      * @return
      */
     public static String generateStoreFileChunkRealPath(String basePath, String identifier, Integer chunkNumber) {
-        return new StringBuffer(basePath)
-                .append(File.separator)
-                .append(DateUtil.thisYear())
-                .append(File.separator)
-                .append(DateUtil.thisMonth() + 1)
-                .append(File.separator)
-                .append(DateUtil.thisDayOfMonth())
-                .append(File.separator)
-                .append(identifier)
-                .append(File.separator)
-                .append(UUIDUtil.getUUID())
-                .append(RPanConstants.COMMON_SEPARATOR)
-                .append(chunkNumber)
-                .toString();
+        return basePath +
+                File.separator +
+                DateUtil.thisYear() +
+                File.separator +
+                (DateUtil.thisMonth() + 1) +
+                File.separator +
+                DateUtil.thisDayOfMonth() +
+                File.separator +
+                identifier +
+                File.separator +
+                UUIDUtil.getUUID() +
+                RPanConstants.COMMON_SEPARATOR +
+                chunkNumber;
     }
 
     /**

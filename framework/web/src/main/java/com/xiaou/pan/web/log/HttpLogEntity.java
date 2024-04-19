@@ -91,56 +91,44 @@ public class HttpLogEntity {
 
     @Override
     public String toString() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("====================HTTP CALL START====================");
-        stringBuilder.append("callTime: ");
-        stringBuilder.append(DateFormatUtils.ISO_8601_EXTENDED_DATETIME_FORMAT.format(new Date()));
-        stringBuilder.append(System.lineSeparator());
-
-        stringBuilder.append("requestUri: ");
-        stringBuilder.append(getRequestUri());
-        stringBuilder.append(System.lineSeparator());
-
-        stringBuilder.append("method: ");
-        stringBuilder.append(getMethod());
-        stringBuilder.append(System.lineSeparator());
-
-        stringBuilder.append("remoteAddr: ");
-        stringBuilder.append(getRemoteAddr());
-        stringBuilder.append(System.lineSeparator());
-
-        stringBuilder.append("ip: ");
-        stringBuilder.append(getIp());
-        stringBuilder.append(System.lineSeparator());
-
-        stringBuilder.append("requestHeaders: ");
-        stringBuilder.append(getRequestHeaders());
-        stringBuilder.append(System.lineSeparator());
-
-        stringBuilder.append("requestParams: ");
-        stringBuilder.append(getRequestParams());
-        stringBuilder.append(System.lineSeparator());
-
-        stringBuilder.append("status: ");
-        stringBuilder.append(getStatus());
-        stringBuilder.append(System.lineSeparator());
-
-        stringBuilder.append("responseHeaders: ");
-        stringBuilder.append(getResponseHeaders());
-        stringBuilder.append(System.lineSeparator());
 
 
-        stringBuilder.append("responseData: ");
-        stringBuilder.append(getResponseData());
-        stringBuilder.append(System.lineSeparator());
-
-
-        stringBuilder.append("resolveTime: ");
-        stringBuilder.append(getResolveTime());
-        stringBuilder.append(System.lineSeparator());
-
-        stringBuilder.append("====================HTTP CALL FINISH====================");
-        return stringBuilder.toString();
+        String stringBuilder = "====================HTTP CALL START====================" +
+                "callTime: " +
+                DateFormatUtils.ISO_8601_EXTENDED_DATETIME_FORMAT.format(new Date()) +
+                System.lineSeparator() +
+                "requestUri: " +
+                getRequestUri() +
+                System.lineSeparator() +
+                "method: " +
+                getMethod() +
+                System.lineSeparator() +
+                "remoteAddr: " +
+                getRemoteAddr() +
+                System.lineSeparator() +
+                "ip: " +
+                getIp() +
+                System.lineSeparator() +
+                "requestHeaders: " +
+                getRequestHeaders() +
+                System.lineSeparator() +
+                "requestParams: " +
+                getRequestParams() +
+                System.lineSeparator() +
+                "status: " +
+                getStatus() +
+                System.lineSeparator() +
+                "responseHeaders: " +
+                getResponseHeaders() +
+                System.lineSeparator() +
+                "responseData: " +
+                getResponseData() +
+                System.lineSeparator() +
+                "resolveTime: " +
+                getResolveTime() +
+                System.lineSeparator() +
+                "====================HTTP CALL FINISH====================";
+        return stringBuilder;
     }
 
 }
