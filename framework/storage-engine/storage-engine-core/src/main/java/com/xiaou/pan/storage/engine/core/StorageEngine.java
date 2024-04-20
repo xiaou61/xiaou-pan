@@ -1,6 +1,7 @@
 package com.xiaou.pan.storage.engine.core;
 
 import com.xiaou.pan.storage.engine.core.context.DeleteFileContext;
+import com.xiaou.pan.storage.engine.core.context.StoreFileChunkContext;
 import com.xiaou.pan.storage.engine.core.context.StoreFileContext;
 
 import java.io.IOException;
@@ -12,6 +13,7 @@ public interface StorageEngine {
 
     /**
      * 存储物理文件
+     *
      * @param context
      * @throws IOException
      */
@@ -19,8 +21,17 @@ public interface StorageEngine {
 
     /**
      * 删除事务文件
+     *
      * @param context
      * @throws IOException
      */
     void delete(DeleteFileContext context) throws IOException;
+
+    /**
+     * 存储物理文件的分片
+     *
+     * @param context
+     * @throws IOException
+     */
+    void storeChunk(StoreFileChunkContext context) throws IOException;
 }

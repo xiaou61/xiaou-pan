@@ -12,6 +12,7 @@ import com.xiaou.pan.server.modules.file.po.*;
 import com.xiaou.pan.server.modules.file.service.IUserFileService;
 import com.xiaou.pan.server.modules.file.vo.FileChunkUploadVO;
 import com.xiaou.pan.server.modules.file.vo.UPanUserFileVO;
+import com.xiaou.pan.server.modules.file.vo.uploadedChunksVo;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -125,6 +126,28 @@ public class FileController {
         FileChunkUploadContext context = fileConverter.FileChunkUploadPo2FileChunkUploadContext(fileChunkUploadPo);
         FileChunkUploadVO vo = userFileService.chunkUpload(context);
         return R.data(vo);
+    }
 
+    /**
+     * 文件分片上传-分片检查
+     *
+     * @param queryUploadedChunksPo
+     * @return
+     */
+    @GetMapping("file/chunk-upload")
+    public R<uploadedChunksVo> getUploadedChunks(@Validated QueryUploadedChunksPo queryUploadedChunksPo) {
+        UploadedChunksContext context = fileConverter.QueryUploadedChunksPo2uploadedChunksContext(queryUploadedChunksPo);
+        uploadedChunksVo vo = userFileService.getUploadedChunks(context);
+        return R.data(vo);
+    }
+
+    /**
+     * 文件分片上传-文件合并
+     */
+    @GetMapping("file/merage")
+    public R mergeFile(@Validated @RequestBody FileChunkMergePo fileChunkMergePo) {
+        FileChunkMergeContext context = fileConverter.FileChunkMergePo2FileChunkMergeContext(fileChunkMergePo);
+        userFileService.mergeFile(context);
+        return R.success();
     }
 }

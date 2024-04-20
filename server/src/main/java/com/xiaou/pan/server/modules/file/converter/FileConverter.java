@@ -4,6 +4,7 @@ package com.xiaou.pan.server.modules.file.converter;
 import com.xiaou.pan.server.modules.file.context.*;
 import com.xiaou.pan.server.modules.file.context.FileUploadContext;
 import com.xiaou.pan.server.modules.file.po.*;
+import com.xiaou.pan.storage.engine.core.context.StoreFileChunkContext;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -35,4 +36,13 @@ public interface FileConverter {
     FileChunkUploadContext FileChunkUploadPo2FileChunkUploadContext(FileChunkUploadPo fileChunkUploadPo);
 
     FileChunkSaveContext FileChunkUploadContext2FileChunkSaveContext(FileChunkUploadContext context);
+
+    @Mapping(target = "realPath", ignore = true)
+    StoreFileChunkContext fileChunkSaveContext2StoreFileChunkContext(FileChunkSaveContext context);
+
+    @Mapping(target = "userId", expression = "java(com.xiaou.pan.server.common.utils.UserIdUtil.get())")
+    UploadedChunksContext QueryUploadedChunksPo2uploadedChunksContext(QueryUploadedChunksPo queryUploadedChunksPo);
+
+    @Mapping(target = "userId", expression = "java(com.xiaou.pan.server.common.utils.UserIdUtil.get())")
+    FileChunkMergeContext FileChunkMergePo2FileChunkMergeContext(FileChunkMergePo fileChunkMergePo);
 }

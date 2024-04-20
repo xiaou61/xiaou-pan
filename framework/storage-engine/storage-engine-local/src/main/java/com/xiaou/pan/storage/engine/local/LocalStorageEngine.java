@@ -3,6 +3,7 @@ package com.xiaou.pan.storage.engine.local;
 import com.xiaou.pan.core.utils.FileUtils;
 import com.xiaou.pan.storage.engine.core.AbstractStorageEngine;
 import com.xiaou.pan.storage.engine.core.context.DeleteFileContext;
+import com.xiaou.pan.storage.engine.core.context.StoreFileChunkContext;
 import com.xiaou.pan.storage.engine.core.context.StoreFileContext;
 import com.xiaou.pan.storage.engine.local.config.LocalStorageEngineConfig;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ public class LocalStorageEngine extends AbstractStorageEngine {
 
     @Autowired
     private LocalStorageEngineConfig config;
+
     @Override
     protected void doDelete(DeleteFileContext context) throws IOException {
         FileUtils.deleteFiles(context.getRealFilePathList());
@@ -28,8 +30,22 @@ public class LocalStorageEngine extends AbstractStorageEngine {
     @Override
     protected void doStore(StoreFileContext context) throws IOException {
         String basePath = config.getRootFilePath();
-        String realFilePath = FileUtils.generateStoreFileRealPath(basePath,context.getFilename());
-        FileUtils.writeStream2File(context.getInputStream(),new File(realFilePath),context.getTotalSize());
+        String realFilePath = FileUtils.generateStoreFileRealPath(basePath, context.getFilename());
+        FileUtils.writeStream2File(context.getInputStream(), new File(realFilePath), context.getTotalSize());
+        context.setRealPath(realFilePath);
+    }
+
+    /**
+     * 执行保存文件分片
+     *
+     * @param context
+     * @throws IOException
+     */
+    @Override
+    protected void doStoreChunk(StoreFileChunkContext context) throws IOException {
+        String basePath = config.getRootFilePath();
+        String realFilePath = FileUtils.generateStoreFileChunkRealPath(basePath, context.getIdentifier(), context.getChunkNumber());
+        FileUtils.writeStream2File(context.getInputStream(), new File(realFilePath), context.getTotalSize());
         context.setRealPath(realFilePath);
     }
 }

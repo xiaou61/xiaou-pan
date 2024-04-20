@@ -6,6 +6,7 @@ import com.xiaou.pan.server.modules.file.domain.UPanUserFile;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.xiaou.pan.server.modules.file.vo.FileChunkUploadVO;
 import com.xiaou.pan.server.modules.file.vo.UPanUserFileVO;
+import com.xiaou.pan.server.modules.file.vo.uploadedChunksVo;
 
 import java.util.List;
 
@@ -68,4 +69,17 @@ public interface IUserFileService extends IService<UPanUserFile> {
      * @return
      */
     FileChunkUploadVO chunkUpload(FileChunkUploadContext context);
+
+    /**
+     * 查询用户已上传的分片列表
+     * @param context
+     * @return
+     */
+    uploadedChunksVo getUploadedChunks(UploadedChunksContext context);
+
+    /**
+     * 文件分片合并
+     * @param context
+     */
+    void mergeFile(FileChunkMergeContext context);
 }

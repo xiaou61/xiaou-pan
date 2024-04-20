@@ -10,4 +10,11 @@ import org.springframework.stereotype.Component;
 @Data
 public class LocalStorageEngineConfig {
     private String rootFilePath = FileUtils.generateDefaultStoreFileRealPath();
+
+
+    /**
+     * 实际存储文件分片的路径的前缀
+     */
+    private String rootFileChunkPath = FileUtils.generateDefaultStoreFileChunkRealPath();
+
 }

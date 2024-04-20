@@ -1,7 +1,9 @@
 package com.xiaou.pan.server.modules.file.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiaou.pan.core.constants.RPanConstants;
 import com.xiaou.pan.core.exception.RPanBusinessException;
@@ -23,6 +25,7 @@ import com.xiaou.pan.server.modules.file.service.IUserFileService;
 import com.xiaou.pan.server.modules.file.mapper.UPanUserFileMapper;
 import com.xiaou.pan.server.modules.file.vo.FileChunkUploadVO;
 import com.xiaou.pan.server.modules.file.vo.UPanUserFileVO;
+import com.xiaou.pan.server.modules.file.vo.uploadedChunksVo;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -191,6 +194,37 @@ public class UserFileServiceImpl extends ServiceImpl<UPanUserFileMapper, UPanUse
         FileChunkUploadVO vo = new FileChunkUploadVO();
         vo.setMergeFlag(fileChunkSaveContext.getMergeFlagEnum().getCode());
         return vo;
+    }
+
+    /**
+     * 1.查询已上传的分片列表
+     * 2.封装返回实体
+     *
+     * @param context
+     * @return
+     */
+    @Override
+    public uploadedChunksVo getUploadedChunks(UploadedChunksContext context) {
+        QueryWrapper queryWrapper = Wrappers.query();
+        queryWrapper.select("chunk_number");
+        queryWrapper.eq("identifier", context.getIdentifier());
+        queryWrapper.eq("create_user", context.getUserId());
+        queryWrapper.gt("expiration_time", new Date());
+        List<Integer> uploadedChunks = fileChunkService.listObjs(queryWrapper, value -> (Integer) value);
+
+        uploadedChunksVo vo = new uploadedChunksVo();
+        vo.setUploadedChunks(uploadedChunks);
+        return vo;
+    }
+
+    /**
+     * 文件分片合并
+     *
+     * @param context
+     */
+    @Override
+    public void mergeFile(FileChunkMergeContext context) {
+
     }
 
 
