@@ -144,7 +144,7 @@ public class FileController {
     /**
      * 文件分片上传-文件合并
      */
-    @GetMapping("file/merage")
+    @GetMapping("file/merge")
     public R mergeFile(@Validated @RequestBody FileChunkMergePo fileChunkMergePo) {
         FileChunkMergeContext context = fileConverter.FileChunkMergePo2FileChunkMergeContext(fileChunkMergePo);
         userFileService.mergeFile(context);

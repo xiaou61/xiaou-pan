@@ -8,7 +8,7 @@ import com.xiaou.pan.server.UPanServerLauncher;
 import com.xiaou.pan.server.modules.user.constants.UserConstants;
 import com.xiaou.pan.server.modules.user.context.*;
 import com.xiaou.pan.server.modules.user.service.IUserService;
-import com.xiaou.pan.server.modules.user.vo.UserInfoVo;
+import com.xiaou.pan.server.modules.user.vo.UserInfoVO;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -271,7 +271,7 @@ public class UserTest {
         Long register = iUserService.register(context);
         Assert.isTrue(register.longValue() > 0L);
 
-        UserInfoVo userInfoVO = iUserService.info(register);
+        UserInfoVO userInfoVO = iUserService.info(register);
         Assert.notNull(userInfoVO);
     }
 

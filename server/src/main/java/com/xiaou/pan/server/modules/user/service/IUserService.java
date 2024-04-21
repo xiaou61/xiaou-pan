@@ -3,7 +3,7 @@ package com.xiaou.pan.server.modules.user.service;
 import com.xiaou.pan.server.modules.user.context.*;
 import com.xiaou.pan.server.modules.user.domain.UPanUser;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.xiaou.pan.server.modules.user.vo.UserInfoVo;
+import com.xiaou.pan.server.modules.user.vo.UserInfoVO;
 
 /**
  * @author Lenovo
@@ -64,5 +64,5 @@ public interface IUserService extends IService<UPanUser> {
      * @param userId
      * @return
      */
-    UserInfoVo info(Long userId);
+    UserInfoVO info(Long userId);
 }

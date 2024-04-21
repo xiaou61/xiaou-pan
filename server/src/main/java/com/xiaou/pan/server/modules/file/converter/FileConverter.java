@@ -45,4 +45,6 @@ public interface FileConverter {
 
     @Mapping(target = "userId", expression = "java(com.xiaou.pan.server.common.utils.UserIdUtil.get())")
     FileChunkMergeContext FileChunkMergePo2FileChunkMergeContext(FileChunkMergePo fileChunkMergePo);
+
+    FileChunkMergeAndSaveContext fileChunkMergeContext2FileChunkMergeAndSaveContext(FileChunkMergeContext context);
 }

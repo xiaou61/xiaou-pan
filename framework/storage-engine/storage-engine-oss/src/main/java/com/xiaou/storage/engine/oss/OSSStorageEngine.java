@@ -2,6 +2,7 @@ package com.xiaou.storage.engine.oss;
 
 import com.xiaou.pan.storage.engine.core.AbstractStorageEngine;
 import com.xiaou.pan.storage.engine.core.context.DeleteFileContext;
+import com.xiaou.pan.storage.engine.core.context.MergeFileContext;
 import com.xiaou.pan.storage.engine.core.context.StoreFileChunkContext;
 import com.xiaou.pan.storage.engine.core.context.StoreFileContext;
 import org.springframework.stereotype.Component;
@@ -25,6 +26,11 @@ public class OSSStorageEngine extends AbstractStorageEngine {
 
     @Override
     protected void doStoreChunk(StoreFileChunkContext context) throws IOException {
+
+    }
+
+    @Override
+    protected void doMergeFile(MergeFileContext context) {
 
     }
 }

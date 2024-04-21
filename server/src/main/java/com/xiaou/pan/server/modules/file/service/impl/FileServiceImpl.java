@@ -1,27 +1,36 @@
 package com.xiaou.pan.server.modules.file.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import com.xiaou.pan.core.exception.RPanBusinessException;
 import com.xiaou.pan.core.utils.FileUtils;
 import com.xiaou.pan.core.utils.IdUtil;
 import com.xiaou.pan.server.common.event.log.ErrorLogEvent;
+import com.xiaou.pan.server.modules.file.context.FileChunkMergeAndSaveContext;
 import com.xiaou.pan.server.modules.file.context.FileSaveContext;
 import com.xiaou.pan.server.modules.file.domain.UPanFile;
-import com.xiaou.pan.server.modules.file.service.IFileService;
+import com.xiaou.pan.server.modules.file.domain.UPanFileChunk;
 import com.xiaou.pan.server.modules.file.mapper.UPanFileMapper;
+import com.xiaou.pan.server.modules.file.service.IFileChunkService;
+import com.xiaou.pan.server.modules.file.service.IFileService;
 import com.xiaou.pan.storage.engine.core.StorageEngine;
 import com.xiaou.pan.storage.engine.core.context.DeleteFileContext;
+import com.xiaou.pan.storage.engine.core.context.MergeFileContext;
 import com.xiaou.pan.storage.engine.core.context.StoreFileContext;
 import lombok.Setter;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Lenovo
@@ -37,6 +46,9 @@ public class FileServiceImpl extends ServiceImpl<UPanFileMapper, UPanFile>
 
     @Setter
     private ApplicationContext applicationContext;
+
+    @Autowired
+    private IFileChunkService fileChunkService;
 
     /**
      * 上传单文件保存实体记录
@@ -56,14 +68,75 @@ public class FileServiceImpl extends ServiceImpl<UPanFileMapper, UPanFile>
         context.setRecord(record);
     }
 
+    /**
+     * 合并物理文件并保存物理文件记录
+     * 1.委托文件引擎合并文件分片
+     * 2.保存物理文件记录
+     *
+     * @param context
+     */
+    @Override
+    public void mergeFileChunkAndSave(FileChunkMergeAndSaveContext context) {
+        doMergeFileChunk(context);
+        UPanFile record = doSaveFile(context.getFilename(),
+                context.getRealPath(),
+                context.getTotalSize(),
+                context.getIdentifier(),
+                context.getUserId());
+        context.setRecord(record);
+    }
+
 
     /*****************************************************private*****************************************************/
+
+
+    /**
+     * 委托文件存储引擎合并文件分片
+     * 1.查询文件分片的记录
+     * 2.根据文件分片的记录去合并物理文件
+     * 3.删除文件分片的记录
+     * 4.封装合并文件的真实存储路径到上下文
+     *
+     * @param context
+     */
+    private void doMergeFileChunk(FileChunkMergeAndSaveContext context) {
+        QueryWrapper<UPanFileChunk> queryWrapper = Wrappers.query();
+        queryWrapper.eq("identifier", context.getIdentifier());
+        queryWrapper.eq("create_user", context.getUserId());
+        queryWrapper.ge("expiration_time", new Date());
+        List<UPanFileChunk> chunkRecoredList = fileChunkService.list(queryWrapper);
+        if (CollectionUtils.isEmpty(chunkRecoredList)) {
+            throw new RPanBusinessException("该文件未找到分片记录");
+        }
+        List<String> realPathList = chunkRecoredList.stream().
+                sorted(Comparator.comparing(UPanFileChunk::getChunkNumber))
+                .map(UPanFileChunk::getRealPath).collect(Collectors.toList());
+
+        //TODO 委托存储引擎去合并文件分片
+        try {
+            MergeFileContext mergeFileContext=new MergeFileContext();
+            mergeFileContext.setFilename(context.getFilename());
+            mergeFileContext.setIdentifier(context.getIdentifier());
+            mergeFileContext.setUserId(context.getUserId());
+            mergeFileContext.setRealPathList(realPathList);
+            storageEngine.mergeFile(mergeFileContext);
+            context.setRealPath(mergeFileContext.getRealPath());
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RPanBusinessException("文件合并失败");
+        }
+
+        List<Long> fileChunkRecordIdList = chunkRecoredList.stream().map(UPanFileChunk::getId).collect(Collectors.toList());
+        fileChunkService.removeByIds(fileChunkRecordIdList);
+
+        //TODO 封装实体文件的真实存储路径
+
+    }
 
 
     private UPanFile doSaveFile(String filename, String realPath, Long totalSize, String identifier, Long userId) {
         UPanFile record = assembleUPanFile(filename, realPath, totalSize, identifier, userId);
         if (!save(record)) {
-            //TODO 删除已上传的物理文件
             try {
                 DeleteFileContext deleteFileContext = new DeleteFileContext();
                 deleteFileContext.setRealFilePathList(Lists.newArrayList(realPath));

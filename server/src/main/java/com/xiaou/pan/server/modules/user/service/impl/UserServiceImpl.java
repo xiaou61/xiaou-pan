@@ -4,12 +4,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiaou.pan.core.constants.CacheConstants;
 import com.xiaou.pan.core.exception.RPanBusinessException;
-import com.xiaou.pan.core.response.R;
 import com.xiaou.pan.core.response.ResponseCode;
 import com.xiaou.pan.core.utils.IdUtil;
 import com.xiaou.pan.core.utils.JwtUtil;
 import com.xiaou.pan.core.utils.PasswordUtil;
-import com.xiaou.pan.server.common.utils.UserIdUtil;
 import com.xiaou.pan.server.modules.file.constants.FileConstants;
 import com.xiaou.pan.server.modules.file.context.CreateFolderContext;
 import com.xiaou.pan.server.modules.file.domain.UPanUserFile;
@@ -20,7 +18,7 @@ import com.xiaou.pan.server.modules.user.converter.UserConverter;
 import com.xiaou.pan.server.modules.user.domain.UPanUser;
 import com.xiaou.pan.server.modules.user.mapper.UPanUserMapper;
 import com.xiaou.pan.server.modules.user.service.IUserService;
-import com.xiaou.pan.server.modules.user.vo.UserInfoVo;
+import com.xiaou.pan.server.modules.user.vo.UserInfoVO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.Cache;
@@ -181,7 +179,7 @@ public class UserServiceImpl extends ServiceImpl<UPanUserMapper, UPanUser>
      * @return
      */
     @Override
-    public UserInfoVo info(Long userId) {
+    public UserInfoVO info(Long userId) {
         UPanUser entity = getById(userId);
         if (Objects.isNull(entity)) {
             throw new RPanBusinessException("用户信息不存在");

@@ -3,6 +3,7 @@ package com.xiaou.pan.storage.engine.local;
 import com.xiaou.pan.core.utils.FileUtils;
 import com.xiaou.pan.storage.engine.core.AbstractStorageEngine;
 import com.xiaou.pan.storage.engine.core.context.DeleteFileContext;
+import com.xiaou.pan.storage.engine.core.context.MergeFileContext;
 import com.xiaou.pan.storage.engine.core.context.StoreFileChunkContext;
 import com.xiaou.pan.storage.engine.core.context.StoreFileContext;
 import com.xiaou.pan.storage.engine.local.config.LocalStorageEngineConfig;
@@ -11,6 +12,8 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.List;
 
 /**
  * 本地文件存储引擎实现类
@@ -48,4 +51,18 @@ public class LocalStorageEngine extends AbstractStorageEngine {
         FileUtils.writeStream2File(context.getInputStream(), new File(realFilePath), context.getTotalSize());
         context.setRealPath(realFilePath);
     }
+
+    @Override
+    protected void doMergeFile(MergeFileContext context) throws IOException {
+        String basePath = config.getRootFilePath();
+        String realFilePath = FileUtils.generateStoreFileRealPath(basePath, context.getFilename());
+        FileUtils.createFile(new File(realFilePath));
+        List<String> chunkPaths = context.getRealPathList();
+        for (String chunkPath : chunkPaths) {
+            FileUtils.appendWrite(Paths.get(realFilePath), new File(chunkPath).toPath());
+        }
+        FileUtils.deleteFiles(chunkPaths);
+        context.setRealPath(realFilePath);
+    }
 }
+

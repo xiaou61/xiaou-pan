@@ -5,13 +5,10 @@ import lombok.Data;
 
 import java.io.Serializable;
 
-/**
- * 文件分片合并的上下文实体对象
- */
 @Data
-public class FileChunkMergeContext implements Serializable {
+public class FileChunkMergeAndSaveContext implements Serializable {
 
-    private static final long serialVersionUID = -7971458041927394757L;
+    private static final long serialVersionUID = -7191699042515641372L;
 
     private String filename;
 
@@ -25,7 +22,11 @@ public class FileChunkMergeContext implements Serializable {
 
     /**
      * 物理文件记录
-     *
      */
     private UPanFile record;
+
+    /**
+     * 文件合并的存储的真实的物理路径
+     */
+    private String realPath;
 }

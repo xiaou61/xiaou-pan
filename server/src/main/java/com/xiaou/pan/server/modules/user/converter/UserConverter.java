@@ -5,7 +5,7 @@ import com.xiaou.pan.server.modules.file.domain.UPanUserFile;
 import com.xiaou.pan.server.modules.user.context.*;
 import com.xiaou.pan.server.modules.user.domain.UPanUser;
 import com.xiaou.pan.server.modules.user.po.*;
-import com.xiaou.pan.server.modules.user.vo.UserInfoVo;
+import com.xiaou.pan.server.modules.user.vo.UserInfoVO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -71,5 +71,5 @@ public interface UserConverter {
     @Mapping(source = "uPanUser.username", target = "username")
     @Mapping(source = "uPanUserFile.fileId", target = "rootFileId")
     @Mapping(source = "uPanUserFile.fileName", target = "rootFilename")
-    UserInfoVo assembleUserInfoVo(UPanUser uPanUser, UPanUserFile uPanUserFile);
+    UserInfoVO assembleUserInfoVo(UPanUser uPanUser, UPanUserFile uPanUserFile);
 }

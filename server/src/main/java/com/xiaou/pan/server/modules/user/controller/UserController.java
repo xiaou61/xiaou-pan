@@ -9,9 +9,8 @@ import com.xiaou.pan.server.modules.user.context.*;
 import com.xiaou.pan.server.modules.user.converter.UserConverter;
 import com.xiaou.pan.server.modules.user.po.*;
 import com.xiaou.pan.server.modules.user.service.IUserService;
-import com.xiaou.pan.server.modules.user.vo.UserInfoVo;
+import com.xiaou.pan.server.modules.user.vo.UserInfoVO;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -132,8 +131,8 @@ public class UserController {
      * @return
      */
     @GetMapping("/")
-    public R<UserInfoVo> info() {
-        UserInfoVo userInfoVo = userService.info(UserIdUtil.get());
+    public R<UserInfoVO> info() {
+        UserInfoVO userInfoVo = userService.info(UserIdUtil.get());
         return R.data(userInfoVo);
     }
 

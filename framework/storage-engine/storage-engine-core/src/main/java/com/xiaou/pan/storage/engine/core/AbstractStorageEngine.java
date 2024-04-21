@@ -4,6 +4,7 @@ import cn.hutool.core.lang.Assert;
 import com.xiaou.pan.core.constants.CacheConstants;
 import com.xiaou.pan.core.exception.RPanBusinessException;
 import com.xiaou.pan.storage.engine.core.context.DeleteFileContext;
+import com.xiaou.pan.storage.engine.core.context.MergeFileContext;
 import com.xiaou.pan.storage.engine.core.context.StoreFileChunkContext;
 import com.xiaou.pan.storage.engine.core.context.StoreFileContext;
 import org.springframework.cache.Cache;
@@ -122,5 +123,37 @@ public abstract class AbstractStorageEngine implements StorageEngine {
         Assert.notNull(context.getTotalChunks(), "文件分片总数不能为空");
         Assert.notNull(context.getUserId(), "用户ID不能为空");
         Assert.notNull(context.getCurrentChunkSize(), "当前分片大小不能为空");
+    }
+
+    /**
+     * 合并文件分片
+     * 1.检查参数
+     * 2.执行动作
+     *
+     * @param context
+     * @throws IOException
+     */
+    @Override
+    public void mergeFile(MergeFileContext context) throws IOException {
+        checkMergeFileContext(context);
+        doMergeFile(context);
+    }
+
+    /**
+     * 执行文件合并的动作，下沉到子类实现
+     * @param context
+     */
+    protected abstract void doMergeFile(MergeFileContext context) throws IOException;
+
+    /**
+     * 检查文件合并的上下文实体信息
+     *
+     * @param context
+     */
+    private void checkMergeFileContext(MergeFileContext context) {
+        Assert.notBlank(context.getFilename(), "文件名称不能为空");
+        Assert.notBlank(context.getIdentifier(), "文件唯一标识不能为空");
+        Assert.notNull(context.getUserId(), "用户ID不能为空");
+        Assert.notEmpty(context.getRealPathList(), "文件总大小不能为空");
     }
 }
