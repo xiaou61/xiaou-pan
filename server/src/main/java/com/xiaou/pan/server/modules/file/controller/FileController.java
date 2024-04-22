@@ -17,6 +17,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotBlank;
 import java.util.List;
 import java.util.Objects;
@@ -144,10 +146,24 @@ public class FileController {
     /**
      * 文件分片上传-文件合并
      */
-    @GetMapping("file/merge")
+    @PostMapping("file/merge")
     public R mergeFile(@Validated @RequestBody FileChunkMergePo fileChunkMergePo) {
         FileChunkMergeContext context = fileConverter.FileChunkMergePo2FileChunkMergeContext(fileChunkMergePo);
         userFileService.mergeFile(context);
         return R.success();
+    }
+
+
+    /**
+     * 文件下载
+     */
+    @GetMapping("file/download")
+    public void download(@Validated @RequestParam(value = "fileId", required = false) String fileId,
+                         HttpServletResponse response) {
+        FileDownloadContext context = new FileDownloadContext();
+        context.setFileId(Long.valueOf(fileId));
+        context.setResponse(response);
+        context.setUserId(UserIdUtil.get());
+        userFileService.download(context);
     }
 }

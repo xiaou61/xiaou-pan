@@ -1,10 +1,7 @@
 package com.xiaou.pan.storage.engine.fastdfs;
 
 import com.xiaou.pan.storage.engine.core.AbstractStorageEngine;
-import com.xiaou.pan.storage.engine.core.context.DeleteFileContext;
-import com.xiaou.pan.storage.engine.core.context.MergeFileContext;
-import com.xiaou.pan.storage.engine.core.context.StoreFileChunkContext;
-import com.xiaou.pan.storage.engine.core.context.StoreFileContext;
+import com.xiaou.pan.storage.engine.core.context.*;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -31,6 +28,11 @@ public class FastDfsStorageEngine extends AbstractStorageEngine {
 
     @Override
     protected void doMergeFile(MergeFileContext context) {
+
+    }
+
+    @Override
+    protected void doRealFile(ReadFileContext context) {
 
     }
 }

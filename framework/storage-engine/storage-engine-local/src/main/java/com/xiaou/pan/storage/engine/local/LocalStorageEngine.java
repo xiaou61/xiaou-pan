@@ -2,15 +2,13 @@ package com.xiaou.pan.storage.engine.local;
 
 import com.xiaou.pan.core.utils.FileUtils;
 import com.xiaou.pan.storage.engine.core.AbstractStorageEngine;
-import com.xiaou.pan.storage.engine.core.context.DeleteFileContext;
-import com.xiaou.pan.storage.engine.core.context.MergeFileContext;
-import com.xiaou.pan.storage.engine.core.context.StoreFileChunkContext;
-import com.xiaou.pan.storage.engine.core.context.StoreFileContext;
+import com.xiaou.pan.storage.engine.core.context.*;
 import com.xiaou.pan.storage.engine.local.config.LocalStorageEngineConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
@@ -63,6 +61,12 @@ public class LocalStorageEngine extends AbstractStorageEngine {
         }
         FileUtils.deleteFiles(chunkPaths);
         context.setRealPath(realFilePath);
+    }
+
+    @Override
+    protected void doRealFile(ReadFileContext context) throws IOException {
+        File file = new File(context.getRealPath());
+        FileUtils.writeFile2OutputStream(new FileInputStream(file), context.getOutputStream(), file.length());
     }
 }
 

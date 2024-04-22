@@ -3,10 +3,7 @@ package com.xiaou.pan.storage.engine.core;
 import cn.hutool.core.lang.Assert;
 import com.xiaou.pan.core.constants.CacheConstants;
 import com.xiaou.pan.core.exception.RPanBusinessException;
-import com.xiaou.pan.storage.engine.core.context.DeleteFileContext;
-import com.xiaou.pan.storage.engine.core.context.MergeFileContext;
-import com.xiaou.pan.storage.engine.core.context.StoreFileChunkContext;
-import com.xiaou.pan.storage.engine.core.context.StoreFileContext;
+import com.xiaou.pan.storage.engine.core.context.*;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 
@@ -155,5 +152,32 @@ public abstract class AbstractStorageEngine implements StorageEngine {
         Assert.notBlank(context.getIdentifier(), "文件唯一标识不能为空");
         Assert.notNull(context.getUserId(), "用户ID不能为空");
         Assert.notEmpty(context.getRealPathList(), "文件总大小不能为空");
+    }
+
+    /**
+     * 1.参数校验
+     * 2.执行动作
+     * @param context
+     * @throws IOException
+     */
+    @Override
+    public void realFile(ReadFileContext context) throws IOException {
+        checkRealFileContext(context);
+        doRealFile(context);
+    }
+
+    /**
+     * 读取文件内容并写入输出流中
+     * @param context
+     */
+    protected abstract void doRealFile(ReadFileContext context) throws IOException;
+
+    /**
+     * 文件读取参数校验
+     * @param context
+     */
+    private void checkRealFileContext(ReadFileContext context) {
+        Assert.notBlank(context.getRealPath(),"文件路径不能为空");
+        Assert.notNull(context.getOutputStream(),"输出流不能为空");
     }
 }
