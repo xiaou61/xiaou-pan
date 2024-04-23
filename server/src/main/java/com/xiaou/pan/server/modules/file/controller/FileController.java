@@ -11,6 +11,7 @@ import com.xiaou.pan.server.modules.file.enums.DelFlagEnum;
 import com.xiaou.pan.server.modules.file.po.*;
 import com.xiaou.pan.server.modules.file.service.IUserFileService;
 import com.xiaou.pan.server.modules.file.vo.FileChunkUploadVO;
+import com.xiaou.pan.server.modules.file.vo.FolderTreeNodeVO;
 import com.xiaou.pan.server.modules.file.vo.UPanUserFileVO;
 import com.xiaou.pan.server.modules.file.vo.uploadedChunksVo;
 import org.springframework.validation.annotation.Validated;
@@ -166,4 +167,30 @@ public class FileController {
         context.setUserId(UserIdUtil.get());
         userFileService.download(context);
     }
+
+    /**
+     * 文件预览
+     */
+    @GetMapping("file/preview")
+    public void preview(@Validated @RequestParam(value = "fileId", required = false) String fileId,
+                         HttpServletResponse response) {
+        FilePreviewContext context = new FilePreviewContext();
+        context.setFileId(Long.valueOf(fileId));
+        context.setResponse(response);
+        context.setUserId(UserIdUtil.get());
+        userFileService.preview(context);
+    }
+
+
+    /**
+     * 查询文件夹树
+     */
+    @GetMapping("file/folder/tree")
+    public R<List<FolderTreeNodeVO>> getFolderTree() {
+        QueryFolderTreeContext context=new QueryFolderTreeContext();
+        context.setUserId(UserIdUtil.get());
+        List<FolderTreeNodeVO> result= userFileService.getFolderTree(context);
+        return R.data(result);
+    }
+
 }

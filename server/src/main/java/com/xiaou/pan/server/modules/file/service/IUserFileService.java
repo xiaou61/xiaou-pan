@@ -5,6 +5,7 @@ import com.xiaou.pan.server.modules.file.context.FileUploadContext;
 import com.xiaou.pan.server.modules.file.domain.UPanUserFile;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.xiaou.pan.server.modules.file.vo.FileChunkUploadVO;
+import com.xiaou.pan.server.modules.file.vo.FolderTreeNodeVO;
 import com.xiaou.pan.server.modules.file.vo.UPanUserFileVO;
 import com.xiaou.pan.server.modules.file.vo.uploadedChunksVo;
 
@@ -88,4 +89,17 @@ public interface IUserFileService extends IService<UPanUserFile> {
      * @param context
      */
     void download(FileDownloadContext context);
+
+    /**
+     * 文件预览
+     * @param context
+     */
+    void preview(FilePreviewContext context);
+
+    /**
+     * 查询文件夹树
+     * @param context
+     * @return
+     */
+    List<FolderTreeNodeVO> getFolderTree(QueryFolderTreeContext context);
 }

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.common.collect.Lists;
 import com.xiaou.pan.core.constants.RPanConstants;
 import com.xiaou.pan.core.exception.RPanBusinessException;
 import com.xiaou.pan.core.utils.FileUtils;
@@ -25,9 +26,11 @@ import com.xiaou.pan.server.modules.file.service.IFileService;
 import com.xiaou.pan.server.modules.file.service.IUserFileService;
 import com.xiaou.pan.server.modules.file.mapper.UPanUserFileMapper;
 import com.xiaou.pan.server.modules.file.vo.FileChunkUploadVO;
+import com.xiaou.pan.server.modules.file.vo.FolderTreeNodeVO;
 import com.xiaou.pan.server.modules.file.vo.UPanUserFileVO;
 import com.xiaou.pan.server.modules.file.vo.uploadedChunksVo;
 import lombok.Setter;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -35,7 +38,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
+
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
@@ -263,6 +266,97 @@ public class UserFileServiceImpl extends ServiceImpl<UPanUserFileMapper, UPanUse
     }
 
     /**
+     * 文件预览
+     * 1.参数校验
+     * 2.校验是否是文件夹
+     * 3.执行预览操作
+     *
+     * @param context
+     */
+    @Override
+    public void preview(FilePreviewContext context) {
+        UPanUserFile record = getById(context.getFileId());
+        checkOperatePermission(record, context.getUserId());
+        if (checkIsFolder(record)) {
+            throw new RPanBusinessException("文件夹不能下载");
+        }
+        doPreview(record, context.getResponse());
+    }
+
+    /**
+     * 查询用户的文件夹树
+     * 1.查询出该用户的所有文件夹列表
+     * 2.在内存中拼接文件夹树
+     *
+     * @param context
+     * @return
+     */
+    @Override
+    public List<FolderTreeNodeVO> getFolderTree(QueryFolderTreeContext context) {
+        List<UPanUserFile> folderRecords = queryFolderRecords(context.getUserId());
+        List<FolderTreeNodeVO> result = assembleFolderTreeNodeVOList(folderRecords);
+        return result;
+    }
+
+
+
+    /*****************************************************private*****************************************************/
+
+
+    /**
+     * 拼装文件夹树列表
+     *
+     * @param folderRecords
+     * @return
+     */
+    private List<FolderTreeNodeVO> assembleFolderTreeNodeVOList(List<UPanUserFile> folderRecords) {
+        if (CollectionUtils.isEmpty(folderRecords)) {
+            return Lists.newArrayList();
+        }
+
+        List<FolderTreeNodeVO> mappedFolderTreeNodeVOList = folderRecords.stream().map(fileConverter::uPanUserFile2FolderTreeNodeVo).collect(Collectors.toList());
+        Map<Long, List<FolderTreeNodeVO>> mappedFolderTreeNodeVOMap = mappedFolderTreeNodeVOList.stream().collect(Collectors.groupingBy(FolderTreeNodeVO::getParentId));
+        for (FolderTreeNodeVO node : mappedFolderTreeNodeVOList) {
+            List<FolderTreeNodeVO> children = mappedFolderTreeNodeVOMap.get(node.getId());
+            if (CollectionUtils.isNotEmpty(children)) {
+                node.getChildren().addAll(children);
+            }
+        }
+        return mappedFolderTreeNodeVOList.stream().filter(node -> Objects.equals(node.getParentId(), FileConstants.TOP_PARENT_ID)).collect(Collectors.toList());
+    }
+
+    /**
+     * 查询用户所有有效文件夹列表
+     *
+     * @param userId
+     * @return
+     */
+    private List<UPanUserFile> queryFolderRecords(Long userId) {
+        QueryWrapper queryWrapper = Wrappers.query();
+        queryWrapper.eq("user_id", userId);
+        queryWrapper.eq("folder_flag", FolderFlagEnum.YES.getCode());
+        queryWrapper.eq("del_flag", DelFlagEnum.NOT_DELETE.getCode());
+        return list(queryWrapper);
+    }
+
+
+    /**
+     * 预览
+     *
+     * @param record
+     * @param response
+     */
+    private void doPreview(UPanUserFile record, HttpServletResponse response) {
+        UPanFile realFileRecord = fileService.getById(record.getRealFileId());
+        if (Objects.isNull(realFileRecord)) {
+            throw new RPanBusinessException("文件不存在");
+        }
+        addCommonResponseHeader(response, realFileRecord.getFilePreviewContentType());
+        realFile2OutputStream(realFileRecord.getRealPath(), response);
+    }
+
+
+    /**
      * 执行文件下载动作
      * <p>
      * 1.查询文件的真实存储路径
@@ -283,15 +377,9 @@ public class UserFileServiceImpl extends ServiceImpl<UPanUserFileMapper, UPanUse
         realFile2OutputStream(realFileRecord.getRealPath(), response);
     }
 
-
-
-
-    /*****************************************************private*****************************************************/
-
-
-
     /**
      * 委托文件存储引擎去读取文件内容，并且写入到输出流中
+     *
      * @param realPath
      * @param response
      */

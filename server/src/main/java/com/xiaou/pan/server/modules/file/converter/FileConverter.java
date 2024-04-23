@@ -3,7 +3,9 @@ package com.xiaou.pan.server.modules.file.converter;
 
 import com.xiaou.pan.server.modules.file.context.*;
 import com.xiaou.pan.server.modules.file.context.FileUploadContext;
+import com.xiaou.pan.server.modules.file.domain.UPanUserFile;
 import com.xiaou.pan.server.modules.file.po.*;
+import com.xiaou.pan.server.modules.file.vo.FolderTreeNodeVO;
 import com.xiaou.pan.storage.engine.core.context.StoreFileChunkContext;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -47,4 +49,10 @@ public interface FileConverter {
     FileChunkMergeContext FileChunkMergePo2FileChunkMergeContext(FileChunkMergePo fileChunkMergePo);
 
     FileChunkMergeAndSaveContext fileChunkMergeContext2FileChunkMergeAndSaveContext(FileChunkMergeContext context);
+
+
+    @Mapping(target = "label", source = "record.fileName")
+    @Mapping(target = "id", source = "record.fileId")
+    @Mapping(target = "children", expression = "java(com.google.common.collect.Lists.newArrayList())")
+    FolderTreeNodeVO uPanUserFile2FolderTreeNodeVo(UPanUserFile record);
 }
